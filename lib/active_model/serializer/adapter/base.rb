@@ -11,6 +11,11 @@ module ActiveModel
 
         def initialize(serializer, options = {})
           @serializer = serializer
+          if serializer.respond_to?(:instance_options)
+            meta_key = serializer.instance_options.fetch(:meta_key, :meta).to_sym
+            meta = meta_options = serializer.instance_options.fetch(meta_key, nil)
+            options = options.merge(Hash[meta_key, meta]) if meta
+          end
           @instance_options = options
         end
 

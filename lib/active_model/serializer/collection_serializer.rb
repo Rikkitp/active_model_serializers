@@ -5,11 +5,12 @@ module ActiveModel
       include Enumerable
       delegate :each, to: :@serializers
 
-      attr_reader :object, :root
+      attr_reader :object, :root, :instance_options
 
       def initialize(resources, options = {})
         @root = options[:root]
         @object = resources
+        @instance_options = options
         @serializers = resources.map do |resource|
           serializer_context_class = options.fetch(:serializer_context_class, ActiveModel::Serializer)
           serializer_class = options.fetch(:serializer) { serializer_context_class.serializer_for(resource) }
