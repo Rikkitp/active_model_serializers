@@ -1,3 +1,5 @@
+[Back to Guides](README.md)
+
 # ARCHITECTURE
 
 An **`ActiveModel::Serializer`** wraps a [serializable resource](https://github.com/rails/rails/blob/4-2-stable/activemodel/lib/active_model/serialization.rb)
@@ -13,7 +15,7 @@ and, if there is no serializer, primitives.
 The **`ActiveModel::Adapter`** describes the structure of the JSON document generated from a
 serializer. For example, the `Attributes` example represents each serializer as its
 unmodified attributes.  The `JsonApi` adapter represents the serializer as a [JSON
-API](jsonapi.org/) document.
+API](http://jsonapi.org/) document.
 
 The **`ActiveModel::SerializableResource`** acts to coordinate the serializer(s) and adapter
 to an object that responds to `to_json`, and `as_json`.  It is used in the controller to
@@ -91,7 +93,7 @@ Details:
   [code](https://github.com/rails-api/active_model_serializers/blob/master/lib/active_model/serializer/lint.rb).
 
 ActiveModelSerializers provides a
-`[ActiveModelSerializers::Model](https://github.com/rails-api/active_model_serializers/blob/master/lib/active_model_serializers/model.rb)`,
+[`ActiveModelSerializers::Model`](https://github.com/rails-api/active_model_serializers/blob/master/lib/active_model_serializers/model.rb),
 which is a simple serializable PORO (Plain-Old Ruby Object).
 
 ActiveModelSerializers::Model may be used either as a template, or in production code.

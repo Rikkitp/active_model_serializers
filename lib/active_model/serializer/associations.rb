@@ -76,8 +76,6 @@ module ActiveModel
         # @api private
         #
         def associate(reflection)
-          self._reflections = _reflections.dup
-
           self._reflections << reflection
         end
       end
@@ -90,6 +88,7 @@ module ActiveModel
 
         Enumerator.new do |y|
           self.class._reflections.each do |reflection|
+            next if reflection.excluded?(self)
             key = reflection.options.fetch(:key, reflection.name)
             next unless include_tree.key?(key)
             y.yield reflection.build_association(self, instance_options)

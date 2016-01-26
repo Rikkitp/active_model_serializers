@@ -2,7 +2,7 @@ require 'test_helper'
 
 module ActiveModel
   class Serializer
-    class CollectionSerializerTest < Minitest::Test
+    class CollectionSerializerTest < ActiveSupport::TestCase
       def setup
         @comment = Comment.new
         @post = Post.new
@@ -36,7 +36,7 @@ module ActiveModel
         assert_kind_of PostSerializer, serializers.last
         assert_kind_of Post, serializers.last.object
 
-        assert_equal serializers.last.custom_options[:some], :options
+        assert_equal :options, serializers.last.custom_options[:some]
       end
 
       def test_serializer_option_not_passed_to_each_serializer
@@ -47,50 +47,53 @@ module ActiveModel
 
       def test_root_default
         @serializer = collection_serializer.new([@comment, @post])
-        assert_equal @serializer.root, nil
+        assert_nil @serializer.root
       end
 
       def test_root
         expected =  'custom_root'
         @serializer = collection_serializer.new([@comment, @post], root: expected)
-        assert_equal @serializer.root, expected
+        assert_equal expected, @serializer.root
       end
 
       def test_root_with_no_serializers
         expected =  'custom_root'
         @serializer = collection_serializer.new([], root: expected)
-        assert_equal @serializer.root, expected
+        assert_equal expected, @serializer.root
       end
 
-      def test_json_key
-        assert_equal @serializer.json_key, 'comments'
+      def test_json_key_with_resource_with_serializer
+        singular_key = @serializer.send(:serializers).first.json_key
+        assert_equal singular_key.pluralize, @serializer.json_key
       end
 
       def test_json_key_with_resource_with_name_and_no_serializers
         serializer = collection_serializer.new(build_named_collection)
-        assert_equal serializer.json_key, 'me_resources'
+        assert_equal 'me_resources', serializer.json_key
       end
 
       def test_json_key_with_resource_with_nil_name_and_no_serializers
         resource = []
         resource.define_singleton_method(:name) { nil }
         serializer = collection_serializer.new(resource)
-        assert_equal serializer.json_key, nil
+        assert_nil serializer.json_key
       end
 
       def test_json_key_with_resource_without_name_and_no_serializers
         serializer = collection_serializer.new([])
-        assert_equal serializer.json_key, nil
+        assert_nil serializer.json_key
       end
 
       def test_json_key_with_root
-        serializer = collection_serializer.new(@resource, root: 'custom_root')
-        assert_equal serializer.json_key, 'custom_roots'
+        expected = 'custom_root'
+        serializer = collection_serializer.new(@resource, root: expected)
+        assert_equal expected, serializer.json_key
       end
 
       def test_json_key_with_root_and_no_serializers
-        serializer = collection_serializer.new(build_named_collection, root: 'custom_root')
-        assert_equal serializer.json_key, 'custom_roots'
+        expected = 'custom_root'
+        serializer = collection_serializer.new(build_named_collection, root: expected)
+        assert_equal expected, serializer.json_key
       end
     end
   end

@@ -33,6 +33,7 @@ end
 class ProfileSerializer < ActiveModel::Serializer
   attributes :name, :description
 
+  # TODO: is this used anywhere?
   def arguments_passed_in?
     instance_options[:my_options] == :accessible
   end
@@ -75,6 +76,7 @@ PostSerializer = Class.new(ActiveModel::Serializer) do
     Blog.new(id: 999, name: 'Custom blog')
   end
 
+  # TODO: is this used anywhere?
   def custom_options
     instance_options
   end
@@ -83,10 +85,6 @@ end
 SpammyPostSerializer = Class.new(ActiveModel::Serializer) do
   attributes :id
   has_many :related
-
-  def self.root_name
-    'posts'
-  end
 end
 
 CommentSerializer = Class.new(ActiveModel::Serializer) do
@@ -191,10 +189,6 @@ AuthorPreviewSerializer = Class.new(ActiveModel::Serializer) do
 end
 
 PostPreviewSerializer = Class.new(ActiveModel::Serializer) do
-  def self.root_name
-    'posts'
-  end
-
   attributes :title, :body, :id
 
   has_many :comments, serializer: CommentPreviewSerializer

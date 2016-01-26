@@ -1,54 +1,39 @@
+require 'active_model/serializer/field'
+
 module ActiveModel
   class Serializer
     # Holds all the meta-data about an association as it was specified in the
     # ActiveModel::Serializer class.
     #
     # @example
-    #  class PostSerializer < ActiveModel::Serializer
+    #   class PostSerializer < ActiveModel::Serializer
     #     has_one :author, serializer: AuthorSerializer
     #     has_many :comments
     #     has_many :comments, key: :last_comments do
-    #       last(1)
+    #       object.comments.last(1)
     #     end
-    #  end
+    #     has_many :secret_meta_data, if: :is_admin?
     #
-    #  Notice that the association block is evaluated in the context of the association.
+    #     def is_admin?
+    #       current_user.admin?
+    #     end
+    #   end
+    #
     #  Specifically, the association 'comments' is evaluated two different ways:
     #  1) as 'comments' and named 'comments'.
-    #  2) as 'comments.last(1)' and named 'last_comments'.
+    #  2) as 'object.comments.last(1)' and named 'last_comments'.
     #
     #  PostSerializer._reflections #=>
     #    # [
     #    #   HasOneReflection.new(:author, serializer: AuthorSerializer),
     #    #   HasManyReflection.new(:comments)
+    #    #   HasManyReflection.new(:comments, { key: :last_comments }, #<Block>)
+    #    #   HasManyReflection.new(:secret_meta_data, { if: :is_admin? })
     #    # ]
     #
     # So you can inspect reflections in your Adapters.
     #
-    Reflection = Struct.new(:name, :options, :block) do
-      delegate :call, to: :reader
-
-      attr_reader :reader
-
-      def initialize(*)
-        super
-        @reader = self.class.build_reader(name, block)
-      end
-
-      # @api private
-      def value(instance)
-        call(instance)
-      end
-
-      # @api private
-      def self.build_reader(name, block)
-        if block
-          ->(instance) { instance.read_attribute_for_serialization(name).instance_eval(&block) }
-        else
-          ->(instance) { instance.read_attribute_for_serialization(name) }
-        end
-      end
-
+    class Reflection < Field
       # Build association. This method is used internally to
       # build serializer's association by its reflection.
       #
